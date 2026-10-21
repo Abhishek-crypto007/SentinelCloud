@@ -1,33 +1,15 @@
-
-# Python
 __pycache__/
 *.py[cod]
-*.egg-info/
 .pytest_cache/
-
-# Virtual environments
 .venv/
 venv/
-env/
-
-# Environment variables and secrets
 .env
 .env.*
 !.env.example
-*.pem
-*.key
-
-# Local databases
 *.db
 *.sqlite
 *.sqlite3
-
-# Editors and operating systems
+*.pem
+*.key
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db
-
-# Test and coverage reports
-.coverage
-htmlcov/
