@@ -1,10 +1,37 @@
 
 from typing import Any
 
+def validate_configuration(config: dict[str, Any]) -> None:
+    """Raise ValueError when required configuration fields are invalid."""
+
+    required_boolean_fields = [
+        "public_access",
+        "encryption_enabled",
+    ]
+
+    for field in required_boolean_fields:
+        if field not in config:
+            raise ValueError(f"Missing required field: {field}")
+
+        if not isinstance(config[field], bool):
+            raise ValueError(f"Field '{field}' must be a boolean")
+
+    optional_boolean_fields = [
+        "versioning_enabled",
+        "logging_enabled",
+    ]
+
+    for field in optional_boolean_fields:
+        if field in config and config[field] is not None:
+            if not isinstance(config[field], bool):
+                raise ValueError(f"Field '{field}' must be a boolean")
+
+
 
 def analyze_configuration(config: dict[str, Any]) -> list[dict[str, str]]:
     """Analyze a sample resource configuration and return findings."""
 
+    validate_configuration(config)
     findings = []
 
     if config["public_access"]:
