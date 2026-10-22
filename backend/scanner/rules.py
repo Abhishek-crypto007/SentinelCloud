@@ -36,5 +36,40 @@ def analyze_configuration(config: dict[str, Any]) -> list[dict[str, str]]:
                 "resource's encryption settings."
             ),
         })
+    if config.get("versioning_enabled") is False:
+        findings.append({
+            "rule_id": "SC-STORAGE-003",
+            "title": "Storage versioning is disabled",
+            "severity": "medium",
+            "description": (
+                "Object versioning is disabled, which may "
+                "make recovery from accidental deletion "
+                "or overwrites more difficult."
+            ),
+            "remediation": (
+                "Enable object versioning where appropriate "
+                "for the storage resource."
+            ),
+        })
+
+    if config.get("logging_enabled") is False:
+        findings.append({
+            "rule_id": "SC-STORAGE-004",
+            "title": "Storage access logging is disabled",
+            "severity": "low",
+            "description": (
+                "Access logging is disabled, which can "
+                "reduce visibility during security investigations."
+            ),
+            "remediation": (
+                "Enable appropriate access logging and "
+                "configure log retention and access controls."
+            ),
+        })
+
+
+
+
+
 
     return findings

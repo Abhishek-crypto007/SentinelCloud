@@ -28,6 +28,8 @@ class ScanRequest(BaseModel):
     resource_type: str = Field(min_length=1, max_length=50)
     public_access: bool
     encryption_enabled: bool
+    versioning_enabled: bool | None = None
+    logging_enabled: bool | None = None
 
 
 # Define the structure of each finding
