@@ -5,6 +5,7 @@ from backend.scanner.rules import (
     analyze_configuration,
     validate_configuration,
 )
+from backend.scanner.constants import VALID_SEVERITIES
 
 
 def test_detects_both_security_issues():
@@ -176,7 +177,6 @@ def test_findings_have_required_fields():
 
     for finding in findings:
         assert required_fields.issubset(finding.keys())
-        assert finding["severity"] in {"low", "medium", "high", "critical"}
-
+        assert finding["severity"] in VALID_SEVERITIES
 
 

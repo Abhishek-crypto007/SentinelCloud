@@ -395,7 +395,27 @@ A license has not yet been selected. Before publishing or accepting contribution
 
 ## 👨‍💻 Project Status
 
-**Current stage:** Initial planning and setup.
+## Current Security Rules
+
+SentinelCloud currently analyzes simulated storage configurations using four rules:
+
+| Rule ID | Check | Severity |
+|---|---|---|
+| `SC-STORAGE-001` | Public access enabled | High |
+| `SC-STORAGE-002` | Encryption disabled | Medium |
+| `SC-STORAGE-003` | Versioning disabled | Medium |
+| `SC-STORAGE-004` | Access logging disabled | Low |
+
+### Input Validation
+
+The scanner validates required Boolean settings and validates optional Boolean settings when they are provided. Invalid or missing required values raise a clear validation error.
+
+### Current Limitations
+
+- Scans use supplied configuration data; live cloud accounts are not scanned.
+- Severity levels are project-defined priorities, not a complete risk assessment.
+- Missing optional settings are treated as unspecified rather than automatically insecure.
+- Remediation guidance is informational and does not change cloud resources.
 
 The first objective is to build a local dashboard and a working rules-based scanner before adding authentication, databases, threat monitoring, or cloud integrations.
 
