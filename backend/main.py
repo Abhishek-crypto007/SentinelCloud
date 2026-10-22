@@ -8,6 +8,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Query
 from backend.database import initialize_database, save_scan, get_scans
 
+from backend.scanner.summary import summarize_findings
+
 # Create the FastAPI application
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,6 +48,7 @@ class ScanResponse(BaseModel):
     resource_type: str
     findings: list[Finding]
     total_findings: int
+    severity_summary: dict[str, int] 
 
 
 # Health-check endpoint
@@ -72,6 +75,7 @@ def scan_configuration(request: ScanRequest):
         resource_type=request.resource_type,
         findings=findings,
         total_findings=len(findings),
+        severity_summary=summarize_findings(findings),
     )
 
 
