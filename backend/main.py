@@ -9,6 +9,7 @@ from fastapi import FastAPI, Query
 from backend.database import initialize_database, save_scan, get_scans
 
 from backend.scanner.summary import summarize_findings
+from backend.scanner.catalog import RULE_CATALOG
 
 # Create the FastAPI application
 @asynccontextmanager
@@ -86,3 +87,19 @@ def scan_history(
     return {
         "scans": get_scans(limit=limit),
     }
+
+
+@app.get("/api/v1/rules")
+def list_security_rules():
+    """Return the available security rule definitions."""
+
+    rules = [
+        {
+            "rule_id": rule_id,
+            "title": metadata["title"],
+            "severity": metadata["severity"],
+        }
+        for rule_id, metadata in RULE_CATALOG.items()
+    ]
+
+    return {"rules": rules}

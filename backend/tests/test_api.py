@@ -6,6 +6,8 @@ from backend.main import app
 client = TestClient(app)
 
 
+
+
 def test_health_endpoint():
     response = client.get("/api/v1/health")
 
@@ -77,4 +79,23 @@ def test_scan_response_includes_severity_summary():
         "high": 1,
         "medium": 2,
         "low": 1,
+    }
+
+
+def test_list_security_rules():
+    response = client.get("/api/v1/rules")
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert "rules" in data
+    assert len(data["rules"]) == 4
+
+    rule_ids = {rule["rule_id"] for rule in data["rules"]}
+
+    assert rule_ids == {
+        "SC-STORAGE-001",
+        "SC-STORAGE-002",
+        "SC-STORAGE-003",
+        "SC-STORAGE-004",
     }
