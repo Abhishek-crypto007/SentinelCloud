@@ -1,15 +1,18 @@
 
-from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, Query , HTTPException
+
+from pydantic import BaseModel, Field   
 
 from backend.scanner.rules import analyze_configuration
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Query
 from backend.database import initialize_database, save_scan, get_scans
 
 from backend.scanner.summary import summarize_findings
 from backend.scanner.catalog import RULE_CATALOG
+
+from backend.scanner.constants import VALID_SEVERITIES
+
 
 # Create the FastAPI application
 @asynccontextmanager
@@ -80,13 +83,46 @@ def scan_configuration(request: ScanRequest):
     )
 
 
+
 @app.get("/api/v1/scans")
 def scan_history(
     limit: int = Query(default=20, ge=1, le=100),
+    severity: str | None = Query(default=None),
 ):
-    return {
-        "scans": get_scans(limit=limit),
-    }
+    scans = get_scans(limit=limit)
+
+    if severity is not None:
+        severity = severity.lower()
+
+        if severity not in VALID_SEVERITIES:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "Invalid severity. Choose from: "
+                    + ", ".join(sorted(VALID_SEVERITIES))
+                ),
+            )
+
+        filtered_scans = []
+
+        for scan in scans:
+            matching_findings = [
+                finding
+                for finding in scan["findings"]
+                if finding["severity"] == severity
+            ]
+
+            if matching_findings:
+                filtered_scans.append({
+                    **scan,
+                    "findings": matching_findings,
+                    "total_findings": len(matching_findings),
+                })
+
+        scans = filtered_scans
+
+    return {"scans": scans}
+
 
 
 @app.get("/api/v1/rules")
@@ -99,7 +135,7 @@ def list_security_rules():
             "title": metadata["title"],
             "severity": metadata["severity"],
         }
-        for rule_id, metadata in RULE_CATALOG.items()
+        for rule_id, metadata in sorted(RULE_CATALOG.items())
     ]
 
     return {"rules": rules}

@@ -110,3 +110,35 @@ def test_list_security_rules_returns_sorted_ids():
     rule_ids = [rule["rule_id"] for rule in rules]
 
     assert rule_ids == sorted(rule_ids)
+
+
+
+
+def test_scan_history_filters_by_severity():
+    client.post(
+        "/api/v1/scans",
+        json={
+            "resource_type": "storage",
+            "public_access": True,
+            "encryption_enabled": False,
+            "versioning_enabled": False,
+            "logging_enabled": False,
+        },
+    )
+
+    response = client.get("/api/v1/scans?severity=high")
+
+    assert response.status_code == 200
+
+    for scan in response.json()["scans"]:
+        assert scan["findings"]
+        assert all(
+            finding["severity"] == "high"
+            for finding in scan["findings"]
+        )
+
+
+def test_scan_history_rejects_invalid_severity():
+    response = client.get("/api/v1/scans?severity=urgent")
+
+    assert response.status_code == 422
