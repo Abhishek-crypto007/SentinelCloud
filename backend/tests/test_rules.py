@@ -55,3 +55,36 @@ def test_encryption_rule_works_independently():
 
     assert len(findings) == 1
     assert findings[0]["rule_id"] == "SC-STORAGE-002"
+
+
+
+def test_disabled_versioning_creates_finding():
+    config = {
+        "resource_type": "storage",
+        "public_access": False,
+        "encryption_enabled": True,
+        "versioning_enabled": False,
+    }
+
+    findings = analyze_configuration(config)
+
+    assert any(
+        finding["rule_id"] == "SC-STORAGE-003"
+        for finding in findings
+    )
+
+
+def test_disabled_logging_creates_finding():
+    config = {
+        "resource_type": "storage",
+        "public_access": False,
+        "encryption_enabled": True,
+        "logging_enabled": False,
+    }
+
+    findings = analyze_configuration(config)
+
+    assert any(
+        finding["rule_id"] == "SC-STORAGE-004"
+        for finding in findings
+    )
