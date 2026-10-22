@@ -99,3 +99,14 @@ def test_list_security_rules():
         "SC-STORAGE-003",
         "SC-STORAGE-004",
     }
+
+
+def test_list_security_rules_returns_sorted_ids():
+    response = client.get("/api/v1/rules")
+
+    assert response.status_code == 200
+
+    rules = response.json()["rules"]
+    rule_ids = [rule["rule_id"] for rule in rules]
+
+    assert rule_ids == sorted(rule_ids)
